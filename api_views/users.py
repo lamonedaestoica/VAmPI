@@ -22,7 +22,9 @@ def get_all_users():
 
 
 def debug():
-    return_value = jsonify({'users': User.get_all_users_debug()})
+    # SECURITY: never expose passwords / admin flags (API3 Excessive Data Exposure).
+    # Return only the same non-sensitive fields as the public user listing.
+    return_value = jsonify({'users': User.get_all_users()})
     return return_value
 
 def me():
