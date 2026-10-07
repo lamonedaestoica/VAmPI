@@ -233,6 +233,12 @@ def update_password(username):
                 else:
                     return Response(error_message_helper("User Not Found"), 400, mimetype="application/json")
             else:
+                # SECURITY: a user may only change their own password. A request for another
+                # username is refused and nothing is changed (instead of silently changing the
+                # caller's own password).
+                if username != resp['sub']:
+                    return Response(error_message_helper("Unauthorized"), 401,
+                                    mimetype="application/json")
                 user = User.query.filter_by(username=resp['sub']).first()
                 user.password = request_data.get('password')
                 db.session.commit()
